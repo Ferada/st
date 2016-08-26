@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-char font[] = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+char font[] = "Unifont:pixelsize=16:scalable=true";
 int borderpx = 2;
 
 /*
@@ -85,30 +85,31 @@ static unsigned int tabspaces = 8;
 /* Terminal colors (16 first used in escape sequence) */
 const char *colorname[] = {
 	/* 8 normal colors */
-	"black",
-	"red3",
-	"green3",
-	"yellow3",
-	"blue2",
-	"magenta3",
-	"cyan3",
-	"gray90",
+	"#141414",
+	"#a85d5d",
+	"#696c59",
+	"#c7c97d",
+	"#7f909c",
+	"#aa8cbf",
+	"#8cb4b2",
+	"#707678",
 
 	/* 8 bright colors */
-	"gray50",
-	"red",
-	"green",
-	"yellow",
-	"#5c5cff",
-	"magenta",
-	"cyan",
-	"white",
+	"#a3a5a6",
+	"#ee6363",
+	"#90a57d",
+	"#d0c54d",
+	"#7c96b0",
+	"#8f4c70",
+	"#2d8285",
+	"#e2e2e2",
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#cccccc",
-	"#555555",
+	"#d0d0df",
+	"black",
+	"#b7af9f",
 };
 
 
@@ -116,8 +117,8 @@ const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 7;
-unsigned int defaultbg = 0;
+unsigned int defaultfg = 258;
+unsigned int defaultbg = 257;
 unsigned int defaultcs = 256;
 unsigned int defaultrcs = 257;
 
