@@ -76,7 +76,7 @@ typedef struct {
 typedef struct {
 	Color *col;
 	size_t collen;
-	Font font, bfont, ifont, ibfont;
+	Font font;
 	GC gc;
 } DC;
 
@@ -827,21 +827,6 @@ xloadfonts(char *fontstr, double fontsize)
 	win.cw = ceilf(dc.font.width * cwscale);
 	win.ch = ceilf(dc.font.height * chscale);
 
-	FcPatternDel(pattern, FC_SLANT);
-	FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ITALIC);
-	if (xloadfont(&dc.ifont, pattern))
-		die("st: can't open font %s\n", fontstr);
-
-	FcPatternDel(pattern, FC_WEIGHT);
-	FcPatternAddInteger(pattern, FC_WEIGHT, FC_WEIGHT_BOLD);
-	if (xloadfont(&dc.ibfont, pattern))
-		die("st: can't open font %s\n", fontstr);
-
-	FcPatternDel(pattern, FC_SLANT);
-	FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ROMAN);
-	if (xloadfont(&dc.bfont, pattern))
-		die("st: can't open font %s\n", fontstr);
-
 	FcPatternDestroy(pattern);
 }
 
@@ -862,9 +847,6 @@ xunloadfonts(void)
 		XftFontClose(xw.dpy, frc[--frclen].font);
 
 	xunloadfont(&dc.font);
-	xunloadfont(&dc.bfont);
-	xunloadfont(&dc.ifont);
-	xunloadfont(&dc.ibfont);
 }
 
 void
@@ -1015,13 +997,10 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
 			frcflags = FRC_NORMAL;
 			runewidth = win.cw * ((mode & ATTR_WIDE) ? 2.0f : 1.0f);
 			if ((mode & ATTR_ITALIC) && (mode & ATTR_BOLD)) {
-				font = &dc.ibfont;
 				frcflags = FRC_ITALICBOLD;
 			} else if (mode & ATTR_ITALIC) {
-				font = &dc.ifont;
 				frcflags = FRC_ITALIC;
 			} else if (mode & ATTR_BOLD) {
-				font = &dc.bfont;
 				frcflags = FRC_BOLD;
 			}
 			yp = winy + font->ascent;
@@ -1124,15 +1103,6 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 	Color *fg, *bg, *temp, revfg, revbg, truefg, truebg;
 	XRenderColor colfg, colbg;
 	XRectangle r;
-
-	/* Fallback on color display for attributes not supported by the font */
-	if (base.mode & ATTR_ITALIC && base.mode & ATTR_BOLD) {
-		if (dc.ibfont.badslant || dc.ibfont.badweight)
-			base.fg = defaultattr;
-	} else if ((base.mode & ATTR_ITALIC && dc.ifont.badslant) ||
-	    (base.mode & ATTR_BOLD && dc.bfont.badweight)) {
-		base.fg = defaultattr;
-	}
 
 	if (IS_TRUECOL(base.fg)) {
 		colfg.alpha = 0xffff;
